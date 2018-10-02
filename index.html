@@ -1,0 +1,322 @@
+<!doctype html> <!-- from http://www.roytuts.com/drag-and-drop-example-with-jquery/-->
+
+<html>
+<head>
+
+<title>Moon shuffle</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<style type="text/css">
+/**
+* add style to entire body
+* ------------------------
+* margin from each side 10px
+* line height for each line 1.8em
+*/
+body {
+margin: 10px;
+font-family: "Georgia", serif;
+line-height: 1.8em;
+color: #333;
+}
+
+/**
+* font-family for headers
+*/
+h1, h2, h3 {
+font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+/**
+* main content area where colors and empty slots are placed
+* ---------------------------------------------------------
+* first we apply margin from all sides,
+* next we override top margin by 10px
+*
+*/
+#content {
+margin: auto;
+margin-top: 10px;
+text-align: center;
+-moz-user-select: none;
+-webkit-user-select: none;
+}
+
+/**
+* header message with border
+*/
+.aboutBox {
+clear: both;
+text-align: center;
+margin: auto;
+margin-top: 50px;
+margin-bottom: 20px;
+padding: 10px;
+background: #ebedf2;
+border: 1px solid #333;
+width: 910px;
+}
+
+.aboutBox h1 {
+font-weight: bold;
+margin: 5px;
+color: #666;
+font-size: 1.5em;
+}
+
+/**
+* empty slots
+*/
+#colorSlots {
+margin: 20px auto 0 auto;
+background: #3B1261;
+}
+
+/**
+* color queue
+*/
+img {
+    width: 100px;
+    height: 100px;
+    margin-top: -30px;
+}
+#colorQueue {
+margin: 0 auto;
+/*background: #ffd;*/
+}
+
+#colorSlots, #colorQueue {
+width: 1100px;
+height: 120px;
+padding: 20px;
+border: 2px solid #333;
+-moz-border-radius: 10px;
+-webkit-border-radius: 10px;
+border-radius: 10px;
+-moz-box-shadow: 0 0 .3em rgba(0, 0, 0, .8);
+-webkit-box-shadow: 0 0 .3em rgba(0, 0, 0, .8);
+box-shadow: 0 0 .3em rgba(0, 0, 0, .8);
+}
+
+#colorSlots div, #colorQueue div {
+float: left;
+width: 100px;
+height: 80px;
+padding: 10px;
+padding-top: 40px;
+padding-bottom: 0;
+border: 2px solid #333;
+-moz-border-radius: 10px;
+-webkit-border-radius: 10px;
+border-radius: 10px;
+margin: 0 0 0 10px;
+background: #fff;
+}
+
+#colorSlots div:first-child, #colorQueue div:first-child {
+margin-left: 20px;
+}
+
+
+#colorSlots div.hovered {
+background: #aaa;
+}
+
+#colorSlots div {
+border-style: dashed;
+}
+
+#colorQueue div {
+background: #666;
+color: #fff;
+font-size: 50px;
+text-shadow: 0 0 3px #000;
+}
+
+#colorQueue div.ui-draggable-dragging {
+-moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+-webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+}
+
+/**
+* success message div
+* position: absolute because it will be shown as popup
+*/
+#successMsg {
+position: absolute;
+left: 580px;
+top: 250px;
+width: 0;
+height: 0;
+z-index: 100;
+background: #dfd;
+border: 2px solid #333;
+-moz-border-radius: 10px;
+-webkit-border-radius: 10px;
+border-radius: 10px;
+-moz-box-shadow: .3em .3em .5em rgba(0, 0, 0, .8);
+-webkit-box-shadow: .3em .3em .5em rgba(0, 0, 0, .8);
+box-shadow: .3em .3em .5em rgba(0, 0, 0, .8);
+padding: 20px;
+}
+
+/**
+* error message div
+*/
+#errorMsg {
+background: #dfd;
+border: 2px solid #333;
+-moz-border-radius: 10px;
+-webkit-border-radius: 10px;
+border-radius: 10px;
+-moz-box-shadow: .3em .3em .5em rgba(0, 0, 0, .8);
+-webkit-box-shadow: .3em .3em .5em rgba(0, 0, 0, .8);
+box-shadow: .3em .3em .5em rgba(0, 0, 0, .8);
+padding: 20px;
+color: red;
+height: 80px;
+width: 380px;
+margin: auto;
+margin-top: 10px;
+position: relative;
+}
+
+#waxingcrescent {
+    background-image: url("waxingcrescent_bright.png");
+   
+}
+</style>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+<script src="jquery.ui.touch-punch.min.js"></script>
+
+<script type="text/javascript">
+
+var colorCount = 0;
+var TotalColors = 8;
+$(document).ready( suffleColors );
+
+function suffleColors() {
+
+// initially hide the success message box
+$('#successMsg').hide();
+
+//initially hide the error message box
+$('#errorMsg').hide();
+
+// Reset to default
+colorCount = 0;
+$('#colorQueue').html( '' );
+$('#colorSlots').html( '' );
+
+// Create the color queue with the color codes
+
+var colorCodes = ['newmoon', 'waxingcrescent_bright', 'firstquarter_bright', 'waxinggibbous_bright', 'fullmoon', 'waninggibbous_bright', 'thirdquarter_bright', 'waningcrescent_bright'];
+
+colorCodes.sort( function() { return Math.random() - .5 } );
+
+for ( var i = 0; i < TotalColors; i++ ) {
+//$('<div style="background-image: url('+ colorCodes[i] +')"></div>')
+$('<div>' + '<img src=' + colorCodes[i] + '.png></div>')
+.data( 'color', colorCodes[i] )
+.attr( 'id', colorCodes[i] )
+.appendTo( '#colorQueue' )
+.draggable( {
+    containment: '#content',
+    stack: '#colorQueue div',
+    cursor: 'move',
+    revert: true
+    } );
+}
+
+// Create the color slots with color codes and color names
+var tempColorCodes = [ 'newmoon', 'waxingcrescent_bright', 'firstquarter_bright', 'waxinggibbous_bright', 'fullmoon', 'waninggibbous_bright', 'thirdquarter_bright', 'waningcrescent_bright' ];
+
+var colors = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Third Quarter', 'Waning Crescent'];
+
+for ( var i = 0; i < TotalColors; i++ ) {
+$('<div>' + colors[i] + '</div>')
+.data( 'color', tempColorCodes[i] )
+.appendTo( '#colorSlots' )
+.droppable( {
+    accept: '#colorQueue div',
+    hoverClass: 'hovered',
+    drop: handleColorDrop
+    } );
+}
+
+}
+
+function handleColorDrop( event, ui ) {
+var slotNumber = $(this).data( 'color' );
+var colorNumber = ui.draggable.data( 'color' );
+
+// If the color was dropped to the correct slot,
+// position it directly on top of the dashed slot
+// and prevent it being dragged again
+if ( slotNumber === colorNumber ) {
+//if dropped on correct slot then hide the error message box
+$('#errorMsg').hide();
+//disable draggable
+ui.draggable.draggable( 'disable' );
+//disable droppable
+$(this).droppable( 'disable' );
+ui.draggable.position( {
+   of: $(this), 
+   my: 'left top', 
+   at: 'left top',
+   using: function (css, calc) {
+       $(this).animate(css, 200, "linear");
+   } } );
+ui.draggable.draggable( 'option', 'revert', false );
+//track how many colors have been dropped on the slots
+colorCount++;
+} else {
+//show the error message if correct slot not selected for drop
+$('#errorMsg').show();
+}
+
+// If all the colors have been placed correctly then display a message
+if ( colorCount == TotalColors ) {
+$('#successMsg').show();
+$('#successMsg').animate( {
+left: '50%',
+top: '50%',
+margin: '-50px 0 0 -200px',
+width: '400px',
+height: '100px',
+opacity: 1
+} );
+}
+
+}
+
+</script>
+
+</head>
+<body>
+
+<div class="aboutBox">
+<h1>Do You Know Your Moon Phases?</h1>
+<h2>Move each moon phase to its corresponding card</h2>
+</div>
+
+<div id="content">
+
+<div id="colorQueue"> </div>
+<div id="colorSlots"> </div>
+
+<div id="errorMsg">
+<h3>OOPs! Wrong selection. Please try again.</h3>
+</div>
+
+<div id="successMsg">
+<h2>You made it!</h2>
+<button onclick="suffleColors()">Shuffle The Deck Again!</button>
+</div>
+
+</div>
+
+</body>
+</html>
