@@ -1,4 +1,4 @@
-<!doctype html> <!-- from http://www.roytuts.com/drag-and-drop-example-with-jquery/-->
+<!doctype html> 
 
 <html>
 <head>
@@ -186,8 +186,14 @@ position: relative;
    
 }
 </style>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js" type="text/javascript"></script>
+
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+<script src="javascript/jquery.gridly.js" type="text/javascript"></script>
+<link href="stylesheets/jquery.gridly.css" rel="stylesheet" type="text/css" />
 
 <script src="jquery.ui.touch-punch.min.js"></script>
 
@@ -199,10 +205,9 @@ $(document).ready( shuffleMoons );
 
 function shuffleMoons() {
 
-// initially hide the success message box
+
 $('#successMsg').hide();
 
-//initially hide the error message box
 $('#errorMsg').hide();
 
 // Reset to default
@@ -210,16 +215,14 @@ moonCount = 0;
 $('#moonQueue').html( '' );
 $('#moonSlots').html( '' );
 
-// Create the color queue with the color codes
 
 var moonCodes = ['newmoon', 'waxingcrescent_bright', 'firstquarter_bright', 'waxinggibbous_bright', 'fullmoon', 'waninggibbous_bright', 'thirdquarter_bright', 'waningcrescent_bright'];
 
 moonCodes.sort( function() { return Math.random() - .5 } );
 
 for ( var i = 0; i < totalMoons; i++ ) {
-//$('<div style="background-image: url('+ colorCodes[i] +')"></div>')
 $('<div>' + '<img src=' + moonCodes[i] + '.png></div>')
-.data( 'color', moonCodes[i] )
+.data( 'moon', moonCodes[i] )
 .attr( 'id', moonCodes[i] )
 .appendTo( '#moonQueue' )
 .draggable( {
@@ -230,14 +233,13 @@ $('<div>' + '<img src=' + moonCodes[i] + '.png></div>')
     } );
 }
 
-// Create the color slots with color codes and color names
 var tempMoonCodes = [ 'newmoon', 'waxingcrescent_bright', 'firstquarter_bright', 'waxinggibbous_bright', 'fullmoon', 'waninggibbous_bright', 'thirdquarter_bright', 'waningcrescent_bright' ];
 
 var colors = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Third Quarter', 'Waning Crescent'];
 
 for ( var i = 0; i < totalMoons; i++ ) {
 $('<div>' + colors[i] + '</div>')
-.data( 'color', tempMoonCodes[i] )
+.data( 'moon', tempMoonCodes[i] )
 .appendTo( '#moonSlots' )
 .droppable( {
     accept: '#moonQueue div',
@@ -249,46 +251,41 @@ $('<div>' + colors[i] + '</div>')
 }
 
 function handleMoonDrop( event, ui ) {
-var slotNumber = $(this).data( 'color' );
-var colorNumber = ui.draggable.data( 'color' );
 
-// If the color was dropped to the correct slot,
-// position it directly on top of the dashed slot
-// and prevent it being dragged again
-if ( slotNumber === colorNumber ) {
-//if dropped on correct slot then hide the error message box
-$('#errorMsg').hide();
-//disable draggable
-ui.draggable.draggable( 'disable' );
-//disable droppable
-$(this).droppable( 'disable' );
-ui.draggable.position( {
-   of: $(this), 
-   my: 'left top', 
-   at: 'left top',
-   using: function (css, calc) {
-       $(this).animate(css, 200, "linear");
-   } } );
-ui.draggable.draggable( 'option', 'revert', false );
-//track how many colors have been dropped on the slots
-moonCount++;
-} else {
-//show the error message if correct slot not selected for drop
-$('#errorMsg').show();
-}
+  var slotNumber = $(this).data( 'moon' );
+  var colorNumber = ui.draggable.data( 'moon' );
 
-// If all the colors have been placed correctly then display a message
-if ( moonCount == totalMoons ) {
-$('#successMsg').show();
-$('#successMsg').animate( {
-left: '50%',
-top: '50%',
-margin: '-50px 0 0 -200px',
-width: '400px',
-height: '100px',
-opacity: 1
-} );
-}
+  if ( slotNumber === colorNumber ) {
+
+    $('#errorMsg').hide();
+
+    ui.draggable.draggable( 'disable' );
+    $(this).droppable( 'disable' );
+    ui.draggable.position( {
+      of: $(this), 
+      my: 'left top', 
+      at: 'left top',
+      using: function (css, calc) {
+          $(this).animate(css, 200, "linear");
+      } 
+    } );
+    ui.draggable.draggable( 'option', 'revert', false );
+    moonCount++;
+  } else {
+    $('#errorMsg').show().delay(2000).fadeOut();
+  };
+
+  if ( moonCount == totalMoons ) {
+    $('#successMsg').show();
+    $('#successMsg').animate( {
+      left: '50%',
+      top: '50%',
+      margin: '-50px 0 0 -200px',
+      width: '400px',
+      height: '100px',
+      opacity: 1
+      } );
+  }
 
 }
 
