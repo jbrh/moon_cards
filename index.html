@@ -66,7 +66,7 @@ font-size: 1.5em;
 /**
 * empty slots
 */
-#colorSlots {
+#moonSlots {
 margin: 20px auto 0 auto;
 background: #3B1261;
 }
@@ -79,12 +79,12 @@ img {
     height: 100px;
     margin-top: -30px;
 }
-#colorQueue {
+#moonQueue {
 margin: 0 auto;
 /*background: #ffd;*/
 }
 
-#colorSlots, #colorQueue {
+#moonSlots, #moonQueue {
 width: 1100px;
 height: 120px;
 padding: 20px;
@@ -97,7 +97,7 @@ border-radius: 10px;
 box-shadow: 0 0 .3em rgba(0, 0, 0, .8);
 }
 
-#colorSlots div, #colorQueue div {
+#moonSlots div, #moonQueue div {
 float: left;
 width: 100px;
 height: 80px;
@@ -112,27 +112,27 @@ margin: 0 0 0 10px;
 background: #fff;
 }
 
-#colorSlots div:first-child, #colorQueue div:first-child {
+#moonSlots div:first-child, #moonQueue div:first-child {
 margin-left: 20px;
 }
 
 
-#colorSlots div.hovered {
+#moonSlots div.hovered {
 background: #aaa;
 }
 
-#colorSlots div {
+#moonSlots div {
 border-style: dashed;
 }
 
-#colorQueue div {
+#moonQueue div {
 background: #666;
 color: #fff;
 font-size: 50px;
 text-shadow: 0 0 3px #000;
 }
 
-#colorQueue div.ui-draggable-dragging {
+#moonQueue div.ui-draggable-dragging {
 -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
 -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
 box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
@@ -193,11 +193,11 @@ position: relative;
 
 <script type="text/javascript">
 
-var colorCount = 0;
-var TotalColors = 8;
-$(document).ready( suffleColors );
+var moonCount = 0;
+var totalMoons = 8;
+$(document).ready( shuffleMoons );
 
-function suffleColors() {
+function shuffleMoons() {
 
 // initially hide the success message box
 $('#successMsg').hide();
@@ -206,49 +206,49 @@ $('#successMsg').hide();
 $('#errorMsg').hide();
 
 // Reset to default
-colorCount = 0;
-$('#colorQueue').html( '' );
-$('#colorSlots').html( '' );
+moonCount = 0;
+$('#moonQueue').html( '' );
+$('#moonSlots').html( '' );
 
 // Create the color queue with the color codes
 
-var colorCodes = ['newmoon', 'waxingcrescent_bright', 'firstquarter_bright', 'waxinggibbous_bright', 'fullmoon', 'waninggibbous_bright', 'thirdquarter_bright', 'waningcrescent_bright'];
+var moonCodes = ['newmoon', 'waxingcrescent_bright', 'firstquarter_bright', 'waxinggibbous_bright', 'fullmoon', 'waninggibbous_bright', 'thirdquarter_bright', 'waningcrescent_bright'];
 
-colorCodes.sort( function() { return Math.random() - .5 } );
+moonCodes.sort( function() { return Math.random() - .5 } );
 
-for ( var i = 0; i < TotalColors; i++ ) {
+for ( var i = 0; i < totalMoons; i++ ) {
 //$('<div style="background-image: url('+ colorCodes[i] +')"></div>')
-$('<div>' + '<img src=' + colorCodes[i] + '.png></div>')
-.data( 'color', colorCodes[i] )
-.attr( 'id', colorCodes[i] )
-.appendTo( '#colorQueue' )
+$('<div>' + '<img src=' + moonCodes[i] + '.png></div>')
+.data( 'color', moonCodes[i] )
+.attr( 'id', moonCodes[i] )
+.appendTo( '#moonQueue' )
 .draggable( {
     containment: '#content',
-    stack: '#colorQueue div',
+    stack: '#moonQueue div',
     cursor: 'move',
     revert: true
     } );
 }
 
 // Create the color slots with color codes and color names
-var tempColorCodes = [ 'newmoon', 'waxingcrescent_bright', 'firstquarter_bright', 'waxinggibbous_bright', 'fullmoon', 'waninggibbous_bright', 'thirdquarter_bright', 'waningcrescent_bright' ];
+var tempMoonCodes = [ 'newmoon', 'waxingcrescent_bright', 'firstquarter_bright', 'waxinggibbous_bright', 'fullmoon', 'waninggibbous_bright', 'thirdquarter_bright', 'waningcrescent_bright' ];
 
 var colors = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Third Quarter', 'Waning Crescent'];
 
-for ( var i = 0; i < TotalColors; i++ ) {
+for ( var i = 0; i < totalMoons; i++ ) {
 $('<div>' + colors[i] + '</div>')
-.data( 'color', tempColorCodes[i] )
-.appendTo( '#colorSlots' )
+.data( 'color', tempMoonCodes[i] )
+.appendTo( '#moonSlots' )
 .droppable( {
-    accept: '#colorQueue div',
+    accept: '#moonQueue div',
     hoverClass: 'hovered',
-    drop: handleColorDrop
+    drop: handleMoonDrop
     } );
 }
 
 }
 
-function handleColorDrop( event, ui ) {
+function handleMoonDrop( event, ui ) {
 var slotNumber = $(this).data( 'color' );
 var colorNumber = ui.draggable.data( 'color' );
 
@@ -271,14 +271,14 @@ ui.draggable.position( {
    } } );
 ui.draggable.draggable( 'option', 'revert', false );
 //track how many colors have been dropped on the slots
-colorCount++;
+moonCount++;
 } else {
 //show the error message if correct slot not selected for drop
 $('#errorMsg').show();
 }
 
 // If all the colors have been placed correctly then display a message
-if ( colorCount == TotalColors ) {
+if ( moonCount == totalMoons ) {
 $('#successMsg').show();
 $('#successMsg').animate( {
 left: '50%',
@@ -304,8 +304,8 @@ opacity: 1
 
 <div id="content">
 
-<div id="colorQueue"> </div>
-<div id="colorSlots"> </div>
+<div id="moonQueue"> </div>
+<div id="moonSlots"> </div>
 
 <div id="errorMsg">
 <h3>OOPs! Wrong selection. Please try again.</h3>
@@ -313,7 +313,7 @@ opacity: 1
 
 <div id="successMsg">
 <h2>You made it!</h2>
-<button onclick="suffleColors()">Shuffle The Deck Again!</button>
+<button onclick="shuffleMoons()">Shuffle The Deck Again!</button>
 </div>
 
 </div>
